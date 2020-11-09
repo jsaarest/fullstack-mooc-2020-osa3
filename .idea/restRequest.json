@@ -1,0 +1,6 @@
+{
+  "uri": "http://localhost:3001/api/person/1",
+  "method": "DELETE",
+  "body": "",
+  "headers": {}
+}
