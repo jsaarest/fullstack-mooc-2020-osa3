@@ -4,7 +4,6 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
-const mongoose = require('mongoose')
 
 app.use(cors())
 app.use(express.json())
@@ -83,8 +82,9 @@ app.post('/api/persons', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  Person.findById(req.params.id).then(person => {
-    res.json(person)
+  Person.findById(req.params.id)
+    .then(person => {
+      res.json(person.toJSON())
   })
 })
 
