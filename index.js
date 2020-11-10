@@ -1,14 +1,14 @@
 require('dotenv').config()
-const Person = require('./models/person')
 const express = require('express')
-const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
+const Person = require('./models/person')
 
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
 
+const morgan = require('morgan')
 morgan.token('body', (req, res) => JSON.stringify(req.body)); // Use morgan to log request body
 app.use(morgan(':method :url :response-time :body'))
 
@@ -95,7 +95,7 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
