@@ -1,7 +1,10 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
+const mongoose = require('mongoose')
+const Person = require('./models/person')
 
 app.use(cors())
 app.use(express.json())
@@ -33,12 +36,6 @@ let persons = [
     }
   ]
 
-const generateId = () => {
-  const maxId = persons.length > 0
-    ? Math.max(...persons.map(person => person.id))
-    : 0
-  return maxId + 1
-}
 
 
 app.get('/', (req, res) => {
@@ -46,12 +43,15 @@ app.get('/', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-  const length = persons.length
+  const length = Person.countDocuments({})
   res.send(`<p>Phonebook has info for ${length} people</p> <p>${new Date()}</p>` )
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person.find({}).then(result => {
+    res.json(result)
+    mongoose.connection.close()
+  })
 })
 
 app.post('/api/persons', (req, res) => {
@@ -70,21 +70,22 @@ app.post('/api/persons', (req, res) => {
       })
   }
   else {
-    const note = {
+    const person = {
       name: req.body.name,
       number: req.body.number,
-      id: generateId(),
     }
-    persons = persons.concat(note)
-    res.json(note)
+    person.save()
+      .then(result => {
+        res.json(result)
+      })
   }
 
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(person => person.id === id)
-  res.json(person)
+  Person.findById(req.params.id).then(person => {
+    res.json(person)
+  })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
